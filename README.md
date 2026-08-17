@@ -31,6 +31,4 @@ Because V-QUEST does not expose historical releases, this archive starts from th
 
 ### IMGT licensing information
 
-As stated [on their website](https://www.imgt.org/about/termsofuse.php) and [in their publications](https://doi.org/10.1093/nar/gkab1136), IMGT's policy regarding sharing of their data is that:
-
-"*... IMGT® software and data are provided to the academic users and NPO's (Not for Profit Organization(s)) under the [CC BY-NC-ND 4.0 license](https://creativecommons.org/licenses/by-nc-nd/4.0/). Any other use of IMGT® material, from the private sector, needs a financial arrangement with CNRS.*"
+As of 2026-07-01, IMGT data is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — commercial use is permitted with attribution. This is a meaningful change from the previous CC BY-NC-ND 4.0 license, which restricted use to academic and non-profit users. See [IMGT's terms of use](https://imgt.org/#termsofuse) for the full text.
