@@ -6,6 +6,25 @@ This repo collates publicly available releases of the [IMGT V-QUEST reference di
 
 For the sibling GENE-DB archive, see [genedb-releases](https://github.com/JamieHeather/genedb-releases).
 
+### V-QUEST vs GENE-DB — when to use which
+
+Both are IMGT germline references and their V/D/J sequences are byte-identical where they overlap (verified: 472/472 shared Human IGHV alleles match exactly at release 202631). But they differ in scope and organisation:
+
+| Aspect | GENE-DB | V-QUEST |
+| --- | --- | --- |
+| Shape | One bulk archive per release; multi-species, multi-locus fastas | Per-species → per-locus → per-gene fastas, pre-split |
+| Region types | V/D/J plus constant regions (`CH1`, `CH2`, hinges, transmembrane, cytoplasmic), MHC (`G-ALPHA1-LIKE`), etc. | V/D/J only |
+| Pseudogene coverage | Inframe + out-of-frame (`allP` variant) | Inframe only |
+| Sequence formats | 5 variants: AA/nt × gapped/ungapped × inframe/all-P | nt-with-gaps only |
+| Species coverage | ~40 species, plus extensive strain-level breakdown (many mouse strains, subspecies) | 37 species |
+| Per-release size | ~5 MB | ~2.5 MB |
+
+**Reach for GENE-DB when you need:** constant regions or antibody structural sub-regions, MHC data, amino-acid sequences, out-of-frame pseudogenes, orphon genes (`IGHV/OR16-*`), strain-level resolution (BALB/c vs C57BL/6 vs …), or species V-QUEST doesn't cover (e.g. `Cercocebus atys`, `Papio anubis`, `Mesocricetus auratus`, additional *Mus* species).
+
+**Reach for V-QUEST when you need:** Chondrichthyes (shark IGHV — VNAR work), Teleostei, cod (`Gadus morhua`), or catfish (`Ictalurus punctatus`) — the taxa GENE-DB genuinely lacks; or when you want files pre-scoped by species/locus/gene so you can just point at `Homo_sapiens/IG/IGHV.fasta.gz` with no header-filter step; or when you're producing outputs meant to align with IMGT's V-QUEST alignment tool.
+
+**For mainstream mammalian V/D/J germline work, either works** — pick based on which format is easier for your pipeline.
+
 Releases live under `releases/`, named by date of access and IMGT release number (format `YYYYWW-N`, scraped from [refseqh.html](https://www.imgt.org/vquest/refseqh.html)):
 
 ```
