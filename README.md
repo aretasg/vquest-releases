@@ -4,6 +4,8 @@ This repo collates publicly available releases of the [IMGT V-QUEST reference di
 
 For the sibling GENE-DB archive, see [genedb-releases](https://github.com/JamieHeather/genedb-releases).
 
+A read-only mirror is available on Codeberg: [codeberg.org/aretasg/vquest-releases](https://codeberg.org/aretasg/vquest-releases).
+
 ## V-QUEST vs GENE-DB — when to use which
 
 Both are IMGT germline references and their V/D/J sequences are byte-identical where they overlap (verified: 472/472 shared Human IGHV alleles match exactly at release 202631). They differ in scope and organisation:
@@ -49,6 +51,8 @@ Fastas are stored gzipped (`.fasta.gz`) — the raw files compress ~7×. Decompr
 New releases are detected weekly by the [GitHub Action](.github/workflows/harvest-vquest.yml), which runs [`scripts/harvest-vquest.py`](scripts/harvest-vquest.py). The script mirrors the full V-QUEST reference tree via `wget --recursive`, so no hardcoded species or gene-prefix list is needed — every subdirectory IMGT publishes is captured automatically.
 
 Because V-QUEST does not expose historical releases, this archive starts from the date of first automated harvest. Older releases cannot be backfilled.
+
+GitHub is the source of truth. Every push to `main` (including harvest commits) is mirrored to [Codeberg](https://codeberg.org/aretasg/vquest-releases) by a [second Action](.github/workflows/mirror-codeberg.yml), which fails if the two copies diverge.
 
 ## Licensing
 

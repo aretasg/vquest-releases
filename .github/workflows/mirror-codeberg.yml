@@ -1,0 +1,47 @@
+name: Mirror to Codeberg
+
+on:
+  push:
+    branches: [main]
+  # Harvest commits are pushed with GITHUB_TOKEN, which does not trigger
+  # `push` workflows, so also run after every harvest.
+  workflow_run:
+    workflows: ["Harvest IMGT V-QUEST"]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-codeberg
+  cancel-in-progress: false
+
+env:
+  CODEBERG_REPO: aretasg/vquest-releases
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # Plain (non-force) push: if Codeberg ever has commits GitHub doesn't,
+      # this fails instead of silently overwriting them.
+      - name: Push main and tags to Codeberg
+        env:
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+        run: |
+          remote="https://${CODEBERG_REPO%%/*}:${CODEBERG_TOKEN}@codeberg.org/${CODEBERG_REPO}.git"
+          git push "$remote" main:main
+          git push "$remote" --tags
+
+      - name: Verify both remotes point at the same commit
+        run: |
+          gh_sha=$(git ls-remote https://github.com/${{ github.repository }}.git refs/heads/main | cut -f1)
+          cb_sha=$(git ls-remote https://codeberg.org/${CODEBERG_REPO}.git refs/heads/main | cut -f1)
+          echo "GitHub:   $gh_sha"
+          echo "Codeberg: $cb_sha"
+          [ -n "$gh_sha" ] && [ "$gh_sha" = "$cb_sha" ]
