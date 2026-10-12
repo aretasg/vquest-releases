@@ -11,10 +11,11 @@ jobs:
 
     permissions:
       contents: write
+      actions: write  # to dispatch the Codeberg mirror
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install wget
         run: sudo apt-get install -y wget
@@ -33,4 +34,7 @@ jobs:
           else
             git commit -m "$(date -u '+%Y-%m-%d'): new release detected"
             git push
+            gh workflow run mirror-codeberg.yml --ref main
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -4,10 +4,8 @@ on:
   push:
     branches: [main]
   # Harvest commits are pushed with GITHUB_TOKEN, which does not trigger
-  # `push` workflows, so also run after every harvest.
-  workflow_run:
-    workflows: ["Harvest IMGT V-QUEST"]
-    types: [completed]
+  # `push` workflows, so the harvest dispatches this workflow explicitly
+  # whenever it pushes a new release.
   workflow_dispatch:
 
 concurrency:
@@ -23,20 +21,31 @@ jobs:
 
     steps:
       - name: Checkout full history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 0
 
       # Plain (non-force) push: if Codeberg ever has commits GitHub doesn't,
-      # this fails instead of silently overwriting them.
+      # this fails instead of silently overwriting them. Retried because
+      # Codeberg occasionally returns transient 5xx errors.
       - name: Push main and tags to Codeberg
         env:
           CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
         run: |
           remote="https://${CODEBERG_REPO%%/*}:${CODEBERG_TOKEN}@codeberg.org/${CODEBERG_REPO}.git"
-          git push "$remote" main:main
-          git push "$remote" --tags
+          retry() {
+            for attempt in 1 2 3; do
+              "$@" && return 0
+              [ "$attempt" -lt 3 ] || break
+              delay=$((attempt * 30))
+              echo "Attempt $attempt failed, retrying in ${delay}s..."
+              sleep "$delay"
+            done
+            return 1
+          }
+          retry git push "$remote" main:main
+          retry git push "$remote" --tags
 
       - name: Verify both remotes point at the same commit
         run: |
